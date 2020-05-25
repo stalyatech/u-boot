@@ -29,9 +29,9 @@ static int get_bufsize(char *string, int argc, char *argv[], int arg_nb,
 				argv[arg_nb], min_size);
 			return -1;
 		}
-		if (value & 0x3) {
-			sprintf(string, "unaligned size %s",
-				argv[arg_nb]);
+		if (value & (min_size - 1)) {
+			sprintf(string, "unaligned size %s (min=%d)",
+				argv[arg_nb], min_size);
 			return -1;
 		}
 		*bufsize = value;
