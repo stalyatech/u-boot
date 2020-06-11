@@ -164,6 +164,38 @@
 	compatible = "st,stm32-sdmmc2", "arm,pl18x", "arm,primecell";
 };
 
+&usart1 {
+	resets = <&scmi0_reset RST_SCMI0_USART1>;
+};
+
+&usart2 {
+	resets = <&rcc USART2_R>;
+};
+
+&usart3 {
+	resets = <&rcc USART3_R>;
+};
+
+&uart4 {
+	resets = <&rcc UART4_R>;
+};
+
+&uart5 {
+	resets = <&rcc UART5_R>;
+};
+
+&usart6 {
+	resets = <&rcc USART6_R>;
+};
+
+&uart7 {
+	resets = <&rcc UART7_R>;
+};
+
+&uart8{
+	resets = <&rcc UART8_R>;
+};
+
 /* NO MORE USE SCMI SUPPORT for BASIC boot chain */
 #ifndef CONFIG_STM32MP1_TRUSTED
 
@@ -228,4 +260,9 @@
 		u-boot,dm-spl;
 	};
 };
+
+&usart1 {
+	resets = <&rcc USART1_R>;
+};
+
 #endif /* CONFIG_STM32MP1_TRUSTED */
