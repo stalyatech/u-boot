@@ -444,8 +444,11 @@
 			#size-cells = <0>;
 			compatible = "st,stm32-lptimer";
 			reg = <0x40009000 0x400>;
+			interrupts-extended = <&exti 47 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&rcc LPTIM1_K>;
 			clock-names = "mux";
+			power-domains = <&pd_core>;
+			wakeup-source;
 			status = "disabled";
 
 			pwm {
@@ -536,7 +539,6 @@
 			reg = <0x4000e000 0x400>;
 			interrupts-extended = <&exti 27 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&rcc USART2_K>;
-			resets = <&rcc USART2_R>;
 			wakeup-source;
 			power-domains = <&pd_core>;
 			dmas = <&dmamux1 43 0x400 0x5>,
@@ -550,7 +552,6 @@
 			reg = <0x4000f000 0x400>;
 			interrupts-extended = <&exti 28 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&rcc USART3_K>;
-			resets = <&rcc USART3_R>;
 			wakeup-source;
 			power-domains = <&pd_core>;
 			dmas = <&dmamux1 45 0x400 0x5>,
@@ -564,7 +565,6 @@
 			reg = <0x40010000 0x400>;
 			interrupts-extended = <&exti 30 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&rcc UART4_K>;
-			resets = <&rcc UART4_R>;
 			wakeup-source;
 			power-domains = <&pd_core>;
 			dmas = <&dmamux1 63 0x400 0x5>,
@@ -578,7 +578,6 @@
 			reg = <0x40011000 0x400>;
 			interrupts-extended = <&exti 31 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&rcc UART5_K>;
-			resets = <&rcc UART5_R>;
 			wakeup-source;
 			power-domains = <&pd_core>;
 			dmas = <&dmamux1 65 0x400 0x5>,
@@ -701,7 +700,6 @@
 			reg = <0x40018000 0x400>;
 			interrupts-extended = <&exti 32 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&rcc UART7_K>;
-			resets = <&rcc UART7_R>;
 			wakeup-source;
 			power-domains = <&pd_core>;
 			dmas = <&dmamux1 79 0x400 0x5>,
@@ -715,7 +713,6 @@
 			reg = <0x40019000 0x400>;
 			interrupts-extended = <&exti 33 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&rcc UART8_K>;
-			resets = <&rcc UART8_R>;
 			wakeup-source;
 			power-domains = <&pd_core>;
 			dmas = <&dmamux1 81 0x400 0x5>,
@@ -801,7 +798,6 @@
 			reg = <0x44003000 0x400>;
 			interrupts-extended = <&exti 29 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&rcc USART6_K>;
-			resets = <&rcc USART6_R>;
 			wakeup-source;
 			power-domains = <&pd_core>;
 			dmas = <&dmamux1 71 0x400 0x5>,
@@ -1365,8 +1361,11 @@
 			#size-cells = <0>;
 			compatible = "st,stm32-lptimer";
 			reg = <0x50021000 0x400>;
+			interrupts-extended = <&exti 48 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&rcc LPTIM2_K>;
 			clock-names = "mux";
+			power-domains = <&pd_core>;
+			wakeup-source;
 			status = "disabled";
 
 			pwm {
@@ -1392,8 +1391,11 @@
 			#size-cells = <0>;
 			compatible = "st,stm32-lptimer";
 			reg = <0x50022000 0x400>;
+			interrupts-extended = <&exti 50 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&rcc LPTIM3_K>;
 			clock-names = "mux";
+			power-domains = <&pd_core>;
+			wakeup-source;
 			status = "disabled";
 
 			pwm {
@@ -1412,8 +1414,11 @@
 		lptimer4: timer@50023000 {
 			compatible = "st,stm32-lptimer";
 			reg = <0x50023000 0x400>;
+			interrupts-extended = <&exti 52 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&rcc LPTIM4_K>;
 			clock-names = "mux";
+			power-domains = <&pd_core>;
+			wakeup-source;
 			status = "disabled";
 
 			pwm {
@@ -1426,8 +1431,11 @@
 		lptimer5: timer@50024000 {
 			compatible = "st,stm32-lptimer";
 			reg = <0x50024000 0x400>;
+			interrupts-extended = <&exti 53 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&rcc LPTIM5_K>;
 			clock-names = "mux";
+			power-domains = <&pd_core>;
+			wakeup-source;
 			status = "disabled";
 
 			pwm {
@@ -1703,7 +1711,6 @@
 			reg = <0x5c000000 0x400>;
 			interrupts-extended = <&exti 26 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&scmi0_clk CK_SCMI0_USART1>;
-			resets = <&scmi0_reset RST_SCMI0_USART1>;
 			wakeup-source;
 			power-domains = <&pd_core>;
 			status = "disabled";
@@ -1767,6 +1774,9 @@
 			};
 			ts_cal2: calib@5e {
 				reg = <0x5e 0x2>;
+			};
+			ethernet_mac_address: mac@e4 {
+				reg = <0xe4 0x6>;
 			};
 		};
 
