@@ -52,3 +52,5 @@ int setup_mac_address(void);
 /* board power management : configure vddcore according OPP */
 void board_vddcore_init(u32 voltage_mv);
 int board_vddcore_set(void);
+
+void dbgmcu_init(void);

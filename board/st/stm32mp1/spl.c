@@ -12,9 +12,13 @@
 #include <power/pmic.h>
 #include <power/stpmic1.h>
 #include <asm/arch/ddr.h>
+#include <asm/arch/sys_proto.h>
 
 void spl_board_init(void)
 {
+	/* init DBGMU */
+	dbgmcu_init();
+
 	/* Keep vdd on during the reset cycle */
 #if defined(CONFIG_PMIC_STPMIC1) && defined(CONFIG_SPL_POWER_SUPPORT)
 	struct udevice *dev;
