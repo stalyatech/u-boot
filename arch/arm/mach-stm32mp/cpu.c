@@ -157,7 +157,7 @@ static void dbgmcu_init(void)
 	 * done in TF-A for TRUSTED boot and
 	 * DBGMCU access is controlled by BSEC_DENABLE.DBGSWENABLE
 	*/
-	if (!CONFIG_IS_ENABLED(STM32MP1_TRUSTED) && bsec_dbgswenable())
+	if (!IS_ENABLED(CONFIG_STM32MP1_TRUSTED) && bsec_dbgswenable())
 		setbits_le32(DBGMCU_APB4FZ1, DBGMCU_APB4FZ1_IWDG2);
 }
 #endif /* !defined(CONFIG_SPL) || defined(CONFIG_SPL_BUILD) */

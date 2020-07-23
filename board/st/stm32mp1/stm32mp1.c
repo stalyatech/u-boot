@@ -118,7 +118,7 @@ int checkboard(void)
 	const char *fdt_compat;
 	int fdt_compat_len;
 
-	if (CONFIG_IS_ENABLED(STM32MP1_TRUSTED))
+	if (IS_ENABLED(CONFIG_STM32MP1_TRUSTED))
 		mode = "trusted";
 	else
 		mode = "basic";
