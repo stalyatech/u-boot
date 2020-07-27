@@ -204,26 +204,6 @@
 / {
 	clocks {
 		u-boot,dm-pre-reloc;
-
-		clk_hse: clk-hse {
-			u-boot,dm-pre-reloc;
-		};
-
-		clk_hsi: clk-hsi {
-			u-boot,dm-pre-reloc;
-		};
-
-		clk_lse: clk-lse {
-			u-boot,dm-pre-reloc;
-		};
-
-		clk_lsi: clk-lsi {
-			u-boot,dm-pre-reloc;
-		};
-
-		clk_csi: clk-csi {
-			u-boot,dm-pre-reloc;
-		};
 	};
 
 	reboot {
