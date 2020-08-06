@@ -168,7 +168,7 @@
 
 #define STM32MP_ANDROID \
 	"suffix=a\0" \
-	"dtimg_addr=0xc4500000\0" \
+	"dtimg_addr=0xc44FFF80\0" \
 	"android_mmc_splash="\
 		"if part start mmc ${devnum} splash splash_start && " \
 		   "part size mmc ${devnum} splash splash_size;"\
@@ -186,22 +186,20 @@
 		   "dtimg start ${dtimg_addr} ${dt_index} fdt_addr_r;"\
 		"fi\0" \
 	"android_mmc_kernel="\
-		"if part start mmc ${devnum} boot_${suffix} boot_start &&" \
+		"if part start mmc ${devnum} boot_${suffix} boot_start && " \
 		   "part size mmc ${devnum} boot_${suffix} boot_size;"\
 		"then " \
 		   "mmc read ${kernel_addr_r} ${boot_start} ${boot_size};" \
-		   "part nb mmc ${devnum} system_${suffix} rootpart_nb;" \
-		   "env set bootargs" \
-		     "root=/dev/mmcblk${devnum}p${rootpart_nb} " \
+		   "env set bootargs ${android_bootargs} " \
 		     "androidboot.serialno=${serial#} " \
-		     "androidboot.slot_suffix=_${suffix};"\
+		     "androidboot.slot_suffix=_${suffix};" \
 		"fi\0" \
 	"android_mmc_boot="\
 		"mmc dev ${devnum};"\
 		"run android_mmc_splash;" \
 		"run android_mmc_fdt;" \
 		"run android_mmc_kernel;" \
-		"bootm ${kernel_addr_r} - ${fdt_addr_r};\0" \
+		"bootm ${kernel_addr_r} ${kernel_addr_r} ${fdt_addr_r};\0" \
 	"bootcmd_android=" \
 		"env set mmc_boot run android_mmc_boot;" \
 		"run bootcmd_stm32mp\0"

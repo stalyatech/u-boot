@@ -22,6 +22,7 @@
 #include <remoteproc.h>
 #include <reset.h>
 #include <syscon.h>
+#include <tee.h>
 #include <usb.h>
 #include <watchdog.h>
 #include <asm/io.h>
@@ -737,7 +738,7 @@ int board_init(void)
 
 int board_late_init(void)
 {
-	char *boot_device;
+	char *boot_device, *boot_instance;
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 	const void *fdt_compat;
 	int fdt_compat_len;
@@ -790,6 +791,25 @@ int board_late_init(void)
 	if (boot_device &&
 	    (!strcmp(boot_device, "serial") || !strcmp(boot_device, "usb")))
 		env_set("bootdelay", "0");
+
+	/* define dynamic variables for FASTBOOT and ANDROID bootargs*/
+	if (CONFIG_IS_ENABLED(CONFIG_FASTBOOT_FLASH_MMC) &&
+	    boot_device && !strcmp(boot_device, "mmc")) {
+		boot_instance = env_get("boot_instance");
+		env_set("fastboot.boot_instance", boot_instance);
+	}
+	if (CONFIG_IS_ENABLED(OPTEE) &&
+	    tee_find_device(NULL, NULL, NULL, NULL)) {
+		if (CONFIG_IS_ENABLED(CONFIG_CMD_DTIMG))
+			env_set("android_bootargs", "androidboot.optee=true");
+		if (CONFIG_IS_ENABLED(FASTBOOT))
+			env_set("fastboot.boot_mode", "optee");
+	} else {
+		if (CONFIG_IS_ENABLED(CONFIG_CMD_DTIMG))
+			env_set("android_bootargs", "");
+		if (CONFIG_IS_ENABLED(FASTBOOT))
+			env_set("fastboot.boot_mode", "trusted");
+	}
 
 	return 0;
 }
