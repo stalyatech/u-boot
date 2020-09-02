@@ -220,7 +220,8 @@ static void early_enable_caches(void)
 						STM32_SYSRAM_SIZE,
 						DCACHE_DEFAULT_OPTION);
 	else
-		mmu_set_region_dcache_behaviour(STM32_DDR_BASE, STM32_DDR_SIZE,
+		mmu_set_region_dcache_behaviour(STM32_DDR_BASE,
+						CONFIG_DDR_CACHEABLE_SIZE,
 						DCACHE_DEFAULT_OPTION);
 }
 
