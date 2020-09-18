@@ -64,6 +64,7 @@ Currently the following boards are supported:
  + stm32mp157f-dk2.dts
  + stm32mp157f-ed1.dts
  + stm32mp157f-ev1.dts
+ + stm32mp153a-plc.dts
 
 Boot Sequences
 --------------

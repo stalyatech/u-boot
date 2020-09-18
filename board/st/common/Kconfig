@@ -47,7 +47,7 @@ config MTDPARTS_NOR0_TEE
 
 config MTDPARTS_SPINAND0_BOOT
 	string "mtd boot partitions for spi-nand0"
-	default "2m(fsbl),2m(ssbl1),2m(ssbl2)"
+	default "1m(fsbl),1m(ssbl1),1m(ssbl2)"
 	depends on SYS_MTDPARTS_RUNTIME && ARCH_STM32MP
 	help
 	  This define the partitions of nand0 used to build mtparts dynamically
