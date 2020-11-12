@@ -812,19 +812,19 @@ int board_late_init(void)
 		env_set("bootdelay", "0");
 
 	/* define dynamic variables for FASTBOOT and ANDROID bootargs*/
-	if (CONFIG_IS_ENABLED(CONFIG_FASTBOOT_FLASH_MMC) &&
+	if (CONFIG_IS_ENABLED(FASTBOOT_FLASH_MMC) &&
 	    boot_device && !strcmp(boot_device, "mmc")) {
 		boot_instance = env_get("boot_instance");
 		env_set("fastboot.boot_instance", boot_instance);
 	}
 	if (CONFIG_IS_ENABLED(OPTEE) &&
 	    tee_find_device(NULL, NULL, NULL, NULL)) {
-		if (CONFIG_IS_ENABLED(CONFIG_CMD_DTIMG))
+		if (CONFIG_IS_ENABLED(CMD_DTIMG))
 			env_set("android_bootargs", "androidboot.optee=true");
 		if (CONFIG_IS_ENABLED(FASTBOOT))
 			env_set("fastboot.boot_mode", "optee");
 	} else {
-		if (CONFIG_IS_ENABLED(CONFIG_CMD_DTIMG))
+		if (CONFIG_IS_ENABLED(CMD_DTIMG))
 			env_set("android_bootargs", "");
 		if (CONFIG_IS_ENABLED(FASTBOOT))
 			env_set("fastboot.boot_mode", "trusted");
