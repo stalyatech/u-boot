@@ -76,6 +76,12 @@
 #define PKG_SHIFT	27
 #define PKG_MASK	GENMASK(2, 0)
 
+/*
+ * early TLB into the .data section so that it not get cleared
+ * with 16kB allignment (see TTBR0_BASE_ADDR_MASK)
+ */
+u8 early_tlb[PGTABLE_SIZE] __section(".data") __aligned(0x4000);
+
 #if !defined(CONFIG_SPL) || defined(CONFIG_SPL_BUILD)
 #ifndef CONFIG_STM32MP1_TRUSTED
 static void security_init(void)
@@ -142,17 +148,17 @@ static void security_init(void)
 /*
  * Debug init
  */
-static void dbgmcu_init(void)
+void dbgmcu_init(void)
 {
-	setbits_le32(RCC_DBGCFGR, RCC_DBGCFGR_DBGCKEN);
-
 	/*
 	 * Freeze IWDG2 if Cortex-A7 is in debug mode
 	 * done in TF-A for TRUSTED boot and
 	 * DBGMCU access is controlled by BSEC_DENABLE.DBGSWENABLE
 	*/
-	if (!CONFIG_IS_ENABLED(STM32MP1_TRUSTED) && bsec_dbgswenable())
+	if (!IS_ENABLED(CONFIG_STM32MP1_TRUSTED) && bsec_dbgswenable()) {
+		setbits_le32(RCC_DBGCFGR, RCC_DBGCFGR_DBGCKEN);
 		setbits_le32(DBGMCU_APB4FZ1, DBGMCU_APB4FZ1_IWDG2);
+	}
 }
 #endif /* !defined(CONFIG_SPL) || defined(CONFIG_SPL_BUILD) */
 
@@ -193,17 +199,45 @@ u32 get_bootmode(void)
 }
 
 /*
+ * initialize the MMU and activate cache in SPL or in U-Boot pre-reloc stage
+ * MMU/TLB is updated in enable_caches() for U-Boot after relocation
+ * or is deactivated in U-Boot entry function start.S::cpu_init_cp15
+ */
+static void early_enable_caches(void)
+{
+	/* I-cache is already enabled in start.S: cpu_init_cp15 */
+
+	if (CONFIG_IS_ENABLED(SYS_DCACHE_OFF))
+		return;
+
+	gd->arch.tlb_size = PGTABLE_SIZE;
+	gd->arch.tlb_addr = (unsigned long)&early_tlb;
+
+	dcache_enable();
+
+	if (IS_ENABLED(CONFIG_SPL_BUILD))
+		mmu_set_region_dcache_behaviour(STM32_SYSRAM_BASE,
+						STM32_SYSRAM_SIZE,
+						DCACHE_DEFAULT_OPTION);
+	else
+		mmu_set_region_dcache_behaviour(STM32_DDR_BASE,
+						CONFIG_DDR_CACHEABLE_SIZE,
+						DCACHE_DEFAULT_OPTION);
+}
+
+/*
  * Early system init
  */
 int arch_cpu_init(void)
 {
 	u32 boot_mode;
 
+	early_enable_caches();
+
 	/* early armv7 timer init: needed for polling */
 	timer_init();
 
 #if !defined(CONFIG_SPL) || defined(CONFIG_SPL_BUILD)
-	dbgmcu_init();
 #ifndef CONFIG_STM32MP1_TRUSTED
 	security_init();
 	update_bootmode();
@@ -231,7 +265,14 @@ int arch_cpu_init(void)
 
 void enable_caches(void)
 {
-	/* Enable D-cache. I-cache is already enabled in start.S */
+	/* I-cache is already enabled in start.S: icache_enable() not needed */
+
+	/* deactivate the data cache, early enabled in arch_cpu_init() */
+	dcache_disable();
+	/*
+	 * update MMU after relocation and enable the data cache
+	 * warning: the TLB location udpated in board_f.c::reserve_mmu
+	 */
 	dcache_enable();
 }
 

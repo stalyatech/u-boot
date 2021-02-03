@@ -6,6 +6,7 @@
 
 #include <common.h>
 #include <cpu_func.h>
+#include <lmb.h>
 #include <asm/system.h>
 #include <asm/cache.h>
 #include <linux/compiler.h>
@@ -61,8 +62,11 @@ void mmu_set_region_dcache_behaviour(phys_addr_t start, size_t size,
 	unsigned long startpt, stoppt;
 	unsigned long upto, end;
 
-	end = ALIGN(start + size, MMU_SECTION_SIZE) >> MMU_SECTION_SHIFT;
+	/* div by 2 before start + size to avoid phys_addr_t overflow */
+	end = ALIGN((start / 2) + (size / 2), MMU_SECTION_SIZE / 2)
+	      >> (MMU_SECTION_SHIFT - 1);
 	start = start >> MMU_SECTION_SHIFT;
+
 #ifdef CONFIG_ARMV7_LPAE
 	debug("%s: start=%pa, size=%zu, option=%llx\n", __func__, &start, size,
 	      option);
@@ -89,20 +93,29 @@ void mmu_set_region_dcache_behaviour(phys_addr_t start, size_t size,
 __weak void dram_bank_mmu_setup(int bank)
 {
 	bd_t *bd = gd->bd;
+	struct lmb lmb;
 	int	i;
+
+	/* bd->bi_dram is available only after relocation */
+	if ((gd->flags & GD_FLG_RELOC) == 0)
+		return;
+
+	/*
+	 * don't allow cache on reserved memory tagged 'no-map' in DT
+	 * => avoid speculative access to "secure" data
+	 */
+	lmb_init_and_reserve(&lmb, bd, (void *)gd->fdt_blob);
 
 	debug("%s: bank: %d\n", __func__, bank);
 	for (i = bd->bi_dram[bank].start >> MMU_SECTION_SHIFT;
 	     i < (bd->bi_dram[bank].start >> MMU_SECTION_SHIFT) +
 		 (bd->bi_dram[bank].size >> MMU_SECTION_SHIFT);
 	     i++) {
-#if defined(CONFIG_SYS_ARM_CACHE_WRITETHROUGH)
-		set_section_dcache(i, DCACHE_WRITETHROUGH);
-#elif defined(CONFIG_SYS_ARM_CACHE_WRITEALLOC)
-		set_section_dcache(i, DCACHE_WRITEALLOC);
-#else
-		set_section_dcache(i, DCACHE_WRITEBACK);
-#endif
+		if (lmb_is_reserved_flags(&lmb, i << MMU_SECTION_SHIFT,
+					  LMB_NOMAP))
+			set_section_dcache(i, INVALID_ENTRY);
+		else
+			set_section_dcache(i, DCACHE_DEFAULT_OPTION);
 	}
 }
 

@@ -154,8 +154,9 @@ int optee_copy_fdt_nodes(const void *old_blob, void *new_blob)
 	/* optee inserts its memory regions as reserved-memory nodes */
 	nodeoffset = fdt_subnode_offset(old_blob, 0, "reserved-memory");
 	if (nodeoffset >= 0) {
-		subnode = fdt_first_subnode(old_blob, nodeoffset);
-		while (subnode >= 0) {
+		for (subnode = fdt_first_subnode(old_blob, nodeoffset);
+		     subnode >= 0;
+		     subnode = fdt_next_subnode(old_blob, subnode)) {
 			const char *name = fdt_get_name(old_blob,
 							subnode, NULL);
 			if (!name)
@@ -189,14 +190,12 @@ int optee_copy_fdt_nodes(const void *old_blob, void *new_blob)
 				ret = fdtdec_add_reserved_memory(new_blob,
 								 nodename,
 								 &carveout,
-								 NULL);
+								 NULL, true);
 				free(oldname);
 
 				if (ret < 0)
 					return ret;
 			}
-
-			subnode = fdt_next_subnode(old_blob, subnode);
 		}
 	}
 
